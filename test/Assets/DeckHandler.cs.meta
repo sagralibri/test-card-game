@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 7d9484051efbbb64183f74584a1aeef2
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - empty: {fileID: 4586666000878546106, guid: a0cf91ef038ef1540a410a9f84ec0180, type: 3}
+  - Knives: {fileID: 11400000, guid: 319230b984773fa49914afa81a1b242e, type: 2}
+  - TwinKnives: {fileID: 11400000, guid: e9da819bab9934c4e8290e475674eec1, type: 2}
+  - cardPrefab: {fileID: 7438370121015450006, guid: c69ba3c7ae8ab194d804a8f1d8bf6e3e, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
