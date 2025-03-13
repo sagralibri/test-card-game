@@ -41,14 +41,24 @@ public class DamageHandler : MonoBehaviour
         if (manager.UseTechnique == null)
             manager.UseTechnique = new UnityEvent<Assignment, Technique, Entity, Entity>();
         manager.UseTechnique.AddListener(AttackFrom);
+        if (manager.GetDamageValue == null)
+            manager.GetDamageValue = new UnityEvent<Technique, Entity, Entity>();
+        manager.GetDamageValue.AddListener(DamageTest);
     }
       // this function assumes that the function that calls it checks mana.
 
     public void AttackFrom(Assignment input, Technique technique, Entity target, Entity caster)
     {
-        Debug.Log(caster);
+        Debug.Log("Current caster: " + caster);
+        Debug.Log("Current target input: " + input);
         int damage = AttackTarget(technique, caster, target);
         manager.GetToEntity.Invoke(input, damage, technique);
+    }
+
+    public void DamageTest(Technique technique, Entity caster, Entity target)
+    {
+        int damage = AttackTarget(technique, caster, target);
+        manager.ReturnDamageValue.Invoke(damage);
     }
     public int AttackTarget(Technique technique, Entity caster, Entity target)
     {

@@ -28,9 +28,9 @@ public class BattleCounterHandler : MonoBehaviour
         manager.LimitUpdate.AddListener(UpdateTreasureLimit);
         manager.LimitUpdate.AddListener(UpdateConsumableLimit); 
 
-        if (manager.PlayerStatChanged == null)
-            manager.PlayerStatChanged = new UnityEvent();
-        manager.PlayerStatChanged.AddListener(UpdatePlayerStats);
+        if (manager.PlayerDamage == null)
+            manager.PlayerDamage = new UnityEvent<int, int>();
+        manager.PlayerDamage.AddListener(UpdatePlayerStats);
 
         if (manager.UpdateDiscardCounter == null)
             manager.UpdateDiscardCounter = new UnityEvent();
@@ -38,8 +38,8 @@ public class BattleCounterHandler : MonoBehaviour
 
         UpdateCounter(manager.money);
         UpdateConsumableLimit();
+        UpdatePlayerStats(10,10);
         UpdateTreasureLimit();
-        UpdatePlayerStats();
         UpdateDiscards();
     }
 
@@ -66,10 +66,10 @@ public class BattleCounterHandler : MonoBehaviour
         treasureLimit.text = manager.treasureCount.ToString() + " / " + manager.treasureMax.ToString();
     }
 
-    public void UpdatePlayerStats()
+    public void UpdatePlayerStats(int Health, int Mana)
     {
-        HPText.text = player.Health.ToString() + " / " + player.MaxHealth.ToString();
-        MPText.text = player.Mana.ToString() + " / " + player.MaxMana.ToString();
+        HPText.text = Health.ToString() + " / " + player.MaxHealth.ToString();
+        MPText.text = Mana.ToString() + " / " + player.MaxMana.ToString();
     }
 
     public void UpdateDiscards()

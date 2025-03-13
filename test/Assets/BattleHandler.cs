@@ -32,6 +32,8 @@ public class BattleHandler : MonoBehaviour
     List<GameObject> removing = new List<GameObject>();
     public bool dontAdd = false;
     public Entity TestOpponent;
+    public Entity opponent;
+    public int damageValue;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -39,6 +41,16 @@ public class BattleHandler : MonoBehaviour
         AddObjects();
         EntityObjectScript entityObjectScriptPlayer = playerObject.AddComponent<EntityObjectScript>();
         entityObjectScriptPlayer.assignment = Assignment.PLAYER;
+        entityObjectScriptPlayer.creature = player;
+        GameObject newOverlayPlayer = Instantiate(enemyOverlayPrefab, new Vector2(-9000,0), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+        EntityScript entityScriptPlayer = newOverlayPlayer.GetComponent<EntityScript>();
+        entityScriptPlayer.creature = player;
+        entityScriptPlayer.enemy = false;
+        entityScriptPlayer.entityObject = playerObject;
+        entityScriptPlayer.assignment = Assignment.PLAYER;
+        entityScriptPlayer.player = player;
+        entityScriptPlayer.isPlayer = true;
+        
 
 
         foreach (GameObject enemy in manager.enemyObjects)
@@ -54,6 +66,19 @@ public class BattleHandler : MonoBehaviour
         if (manager.NextTurn == null)
             manager.NextTurn = new UnityEvent();
         manager.NextTurn.AddListener(NextAction);
+
+        if (manager.GetEntityBH == null)
+            manager.GetEntityBH = new UnityEvent<Entity, bool>();
+        manager.GetEntityBH.AddListener(ProcessCurrentActor);
+
+        if (manager.ReturnEntityBH2 == null)
+            manager.ReturnEntityBH2 = new UnityEvent<Entity>();
+        manager.ReturnEntityBH2.AddListener(SetEntity);
+
+        if (manager.ReturnDamageValue == null)
+            manager.ReturnDamageValue = new UnityEvent<int>();
+        manager.ReturnDamageValue.AddListener(SetDamage);
+
 
 
         SetValidActors();
@@ -91,9 +116,7 @@ public class BattleHandler : MonoBehaviour
         {
             
             GameObject convObj = manager.enemyObjects[i];
-            Debug.Log("convObj Successful");
             Vector3 pos = cam.WorldToScreenPoint(convObj.transform.position);
-            Debug.Log("cameraConv Successful");
             GameObject newOverlay = Instantiate(enemyOverlayPrefab, pos, Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
             EntityScript entityScript = newOverlay.GetComponent<EntityScript>();
             entityScript.creature = enemy;
@@ -105,6 +128,7 @@ public class BattleHandler : MonoBehaviour
             {
                 EntityObjectScript entityObjectScript = convObj.AddComponent<EntityObjectScript>();
                 entityObjectScript.assignment = entityScript.assignment;
+                entityObjectScript.creature = enemy;
             }
             manager.enemyObjects[i].SetActive(true);
             toRemove1.Add(newOverlay);
@@ -126,13 +150,13 @@ public class BattleHandler : MonoBehaviour
             {
                 EntityObjectScript entityObjectScript = convObj.AddComponent<EntityObjectScript>();
                 entityObjectScript.assignment = entityScript.assignment;
+                entityObjectScript.creature = ally;
             }
             manager.allyObjects[i].SetActive(true); 
             toRemove2.Add(newOverlay);
             i++;
         }
         dontAdd = true;
-        Debug.Log("Initialized");
     }
 
     public Assignment GetEnemyAssignment(int i)
@@ -244,7 +268,6 @@ public class BattleHandler : MonoBehaviour
         }
     }
 
-    // this is not working, issue at line 228
     public void NextAction()
     {
         foreach(GameObject actor in validActors)
@@ -256,8 +279,17 @@ public class BattleHandler : MonoBehaviour
         if (validActors.ElementAtOrDefault(nextActor) != null)
         {
             currentActor = validActors[nextActor];
-            Assignment assignment = currentActor.GetComponent<EntityObjectScript>().assignment;
-            manager.canAct = false;
+            if (currentActor.GetComponent<EntityObjectScript>().unconscious == false)
+            {
+                Assignment assignment = currentActor.GetComponent<EntityObjectScript>().assignment;
+                manager.canAct = false;
+                Debug.Log("boop beep");
+                manager.ProcessAI.Invoke(assignment);
+            }
+            else
+            {
+                NextAction();
+            }
         }
         else
         {
@@ -273,8 +305,6 @@ public class BattleHandler : MonoBehaviour
         {
             currentActingSide = Turn.ALLY;
         } */
-        // this is currently bugged, so its functionally has been temporarily stripped
-        // the bug relates to enemies always being marked as unconscious when being attacked
         if (currentActor.GetComponent<EntityObjectScript>().unconscious == true)
         {
             // NextAction();
@@ -287,4 +317,203 @@ public class BattleHandler : MonoBehaviour
         //validActors.Sort(validActorsInitial); how do i sort this
     }
 
+
+    //
+
+    // WARNING !!! NPC AI CODE FROM HERE ON OUT!! WILL BE SCUFFED
+
+    //
+    // i dont want to do this anymore
+
+
+    // TODO: so much
+
+    // Urgent TODO: mana cost
+    void ProcessCurrentActor(Entity actor, bool isEnemy)
+    {
+        // preliminary declarations
+        List<GameObject> validAllies = new List<GameObject>();
+        List<GameObject> validEnemies = new List<GameObject>();
+        validAllies = GetValidAllies(isEnemy);
+        validEnemies = GetValidEnemies(isEnemy);
+        Dictionary<Assignment, Technique> optionsValue = new Dictionary<Assignment, Technique>();
+
+        bool AOE = false;
+        bool healing = false;
+        GameObject target = playerObject;
+        int usedTechniqueInt = UnityEngine.Random.Range(0, actor.techniques.Count - 1);
+        Technique usedTechnique = actor.techniques[usedTechniqueInt];
+
+        switch (usedTechnique.techniqueType)
+        {
+            case TechniqueType.DAMAGE:
+            {
+                if (usedTechnique.targeting == Target.ONEENEMY)
+                {
+                    int targetInt = UnityEngine.Random.Range(0, validEnemies.Count - 1);
+                    target = validEnemies[targetInt];
+                    Debug.Log(target);
+                }
+                else
+                {
+                    AOE = true;
+                } 
+                break;
+            }
+            case TechniqueType.HEALING:
+            {
+                //there is no healing function currently
+                break;
+            }
+        }
+
+        if (healing == false)
+        {
+            if (AOE == false)
+            {
+                Assignment input = target.GetComponent<EntityObjectScript>().assignment;
+                Entity targetEntity = target.GetComponent<EntityObjectScript>().creature;
+                Entity casterEntity = currentActor.GetComponent<EntityObjectScript>().creature;
+                manager.UseTechnique.Invoke(input, usedTechnique, targetEntity, casterEntity);
+                Debug.Log("Enemy turn Complete");
+            }
+            else
+            {
+                Entity casterEntity = currentActor.GetComponent<EntityObjectScript>().creature;
+                foreach (GameObject enemy in validEnemies)
+                {
+                Assignment input = enemy.GetComponent<EntityObjectScript>().assignment;
+                Entity targetEntity = enemy.GetComponent<EntityObjectScript>().creature;
+                manager.UseTechnique.Invoke(input, usedTechnique, targetEntity, casterEntity);
+                }
+                Debug.Log("Enemy turn Complete");
+            }
+        }
+
+        manager.NextTurn.Invoke();
+    }
+
+
+
+    public List<GameObject> GetValidAllies(bool isEnemy)
+    {
+        List<GameObject> validAllies = new List<GameObject>();
+        if (isEnemy == true)
+        {
+            switch (manager.enemies.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    validAllies.Add(e1);
+                    break;
+                case 2:
+                    validAllies.Add(e1);
+                    validAllies.Add(e2);
+                    break;
+                case 3:
+                    validAllies.Add(e1);
+                    validAllies.Add(e2);
+                    validAllies.Add(e3);
+                    break;
+                case 4:
+                    validAllies.Add(e1);
+                    validAllies.Add(e2);
+                    validAllies.Add(e3);
+                    validAllies.Add(e4);
+                    break;
+            }
+        }
+        else
+        {
+            switch (manager.allies.Count)
+            {
+                case 0:
+                    validAllies.Add(playerObject);
+                    break;
+                case 1:
+                    validAllies.Add(playerObject);
+                    validAllies.Add(a1);
+                    break;
+                case 2:
+                    validAllies.Add(playerObject);
+                    validAllies.Add(a1);
+                    validAllies.Add(a2);
+                    break;
+                case 3:
+                    validAllies.Add(playerObject);
+                    validAllies.Add(a1);
+                    validAllies.Add(a2);
+                    validAllies.Add(a3);
+                    break;
+            }
+        }
+        return validAllies;
+    }
+
+    public List<GameObject> GetValidEnemies(bool isEnemy)
+    {
+        List<GameObject> validEnemies = new List<GameObject>();
+        if (isEnemy == true)
+        {
+            switch (manager.allies.Count)
+            {
+                case 0:
+                    validEnemies.Add(playerObject);
+                    break;
+                case 1:
+                    validEnemies.Add(playerObject);
+                    validEnemies.Add(a1);
+                    break;
+                case 2:
+                    validEnemies.Add(playerObject);
+                    validEnemies.Add(a1);
+                    validEnemies.Add(a2);
+                    break;
+                case 3:
+                    validEnemies.Add(playerObject);
+                    validEnemies.Add(a1);
+                    validEnemies.Add(a2);
+                    validEnemies.Add(a3);
+                    break;
+            }
+        }
+        else
+        {
+            switch (manager.enemies.Count)
+            {
+                case 0:
+                    break;
+                case 1:
+                    validEnemies.Add(e1);
+                    break;
+                case 2:
+                    validEnemies.Add(e1);
+                    validEnemies.Add(e2);
+                    break;
+                case 3:
+                    validEnemies.Add(e1);
+                    validEnemies.Add(e2);
+                    validEnemies.Add(e3);
+                    break;
+                case 4:
+                    validEnemies.Add(e1);
+                    validEnemies.Add(e2);
+                    validEnemies.Add(e3);
+                    validEnemies.Add(e4);
+                    break;
+            }
+        }
+        return validEnemies;
+    }
+
+    public void SetEntity(Entity entity)
+    {
+        opponent = entity;
+    }
+
+    public void SetDamage(int damage)
+    {
+        damageValue = damage;
+    }
 }

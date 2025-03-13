@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class Entity : ScriptableObject
 {
     public bool playableCharacter;
+    public AIType AIType;
     public int MaxHealth;
     public int Health;
     public int MaxMana;

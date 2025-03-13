@@ -12,9 +12,11 @@ public class EntityScript : MonoBehaviour
     private manager manager;
     public Entity creature;
     public Entity player;
+    public TMP_Text isDead;
     public TMP_Text health;
     public TMP_Text entityName;
     public GameObject infoPanel;
+    public bool isPlayer;
     public bool enemy;
     public bool unconscious;
     // reveals
@@ -62,13 +64,19 @@ public class EntityScript : MonoBehaviour
         if (manager.GetToEntity == null)
             manager.GetToEntity = new UnityEvent<Assignment, int, Technique>();
         manager.GetToEntity.AddListener(TakeDamage);
+        if (manager.ProcessAI == null)
+            manager.ProcessAI = new UnityEvent<Assignment>();
+        manager.ProcessAI.AddListener(GetEntity);
+        if (manager.GetEntityBH2 == null)
+            manager.GetEntityBH2 = new UnityEvent<Assignment>();
+        manager.GetEntityBH2.AddListener(GetEntity2);
         Debug.Log(player);
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (mouseOver == true)
+        if (mouseOver == true && isPlayer == false)
         {
             infoPanel.SetActive(true);
             manager.GetAlignment.Invoke(assignment, enemy);
@@ -101,44 +109,66 @@ public class EntityScript : MonoBehaviour
     public void TakeDamage(Assignment input, int damage ,Technique technique)
     { 
         if (input == assignment)
+        {
             Health -= damage;
+            Debug.Log(creature + " has taken " + damage + " " + technique.damageType + " damage!");
+            Debug.Log(input + " " + assignment);
             if (Health <= 0)
+            {
                 Health = 0;
                 Die(input);
-        switch (technique.damageType)
-        {
-            case DamageType.SLASHING:
-                slashingRevealed = true;
-                break;
-            case DamageType.PIERCING:
-                piercingRevealed = true;
-                break;
-            case DamageType.BLUDGEONING:
-                bludgeoningRevealed = true;
-                break;
-            case DamageType.FIRE:
-                fireRevealed = true;
-                break;
-            case DamageType.COLD:
-                coldRevealed = true;
-                break;
-            case DamageType.LIGHTNING:
-                lightningRevealed = true;
-                break;
-            case DamageType.FORCE:
-                forceRevealed = true;
-                break;
-            case DamageType.HOLY:
-                holyRevealed = true;
-                break;
-            case DamageType.EVIL:
-                evilRevealed = true;
-                break;
+            }
+            if (isPlayer == true)
+            {
+                manager.PlayerDamage.Invoke(Health, Mana);
+            }
+            switch (technique.damageType)
+            {
+                case DamageType.SLASHING:
+                    slashingRevealed = true;
+                    break;
+                case DamageType.PIERCING:
+                    piercingRevealed = true;
+                    break;
+                case DamageType.BLUDGEONING:
+                    bludgeoningRevealed = true;
+                    break;
+                case DamageType.FIRE:
+                    fireRevealed = true;
+                    break;
+                case DamageType.COLD:
+                    coldRevealed = true;
+                    break;
+                case DamageType.LIGHTNING:
+                    lightningRevealed = true;
+                    break;
+                case DamageType.FORCE:
+                    forceRevealed = true;
+                    break;
+                case DamageType.HOLY:
+                    holyRevealed = true;
+                    break;
+                case DamageType.EVIL:
+                    evilRevealed = true;
+                    break;
+            }
         }
     }
 
     void TextUpdate()
     {
+        if (isPlayer == true)
+        {
+            manager.PlayerDamage.Invoke(Health, Mana);
+        }
+        if (unconscious == true)
+        {
+            isDead.text = "Dead";
+        }
+        else
+        {
+            isDead.text = "";
+        }
         health.text = Health + " / " + creature.MaxHealth;
         entityName.text = creature.name;
         if (piercingRevealed == true)
@@ -202,5 +232,22 @@ public class EntityScript : MonoBehaviour
     {
         unconscious = true;
         manager.KillEntity.Invoke(input);
+    }
+
+    void GetEntity(Assignment input)
+    {
+        if(assignment == input)
+        {
+        manager.GetEntityBH.Invoke(creature, enemy);
+        Debug.Log("beep boop");
+        }
+    }
+
+    void GetEntity2(Assignment input)
+    {
+        if(assignment == input)
+        {
+        manager.ReturnEntityBH2.Invoke(creature);
+        }
     }
 }

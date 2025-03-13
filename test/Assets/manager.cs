@@ -76,6 +76,12 @@ public enum Assignment
     E3,
     E4
 }
+
+public enum AIType
+{
+    RANDOM,
+    SMART
+}
 public class manager
 {
     // events
@@ -94,6 +100,7 @@ public class manager
     public static UnityEvent UpdateDiscardCounter;
     public static UnityEvent NextTurn;
     public static UnityEvent SideChange;
+    public static UnityEvent<int, int> PlayerDamage;
     public static UnityEvent<Assignment> ObjectHover;
     public static UnityEvent<Assignment> ObjectUnhover;
     public static UnityEvent<Assignment, Technique, Entity, Entity> UseTechnique;
@@ -101,6 +108,12 @@ public class manager
     public static UnityEvent<Assignment, int, Technique> GetToEntity;
     public static UnityEvent<Assignment, bool> GetAlignment;
     public static UnityEvent<Assignment> KillEntity;
+    public static UnityEvent<Assignment> ProcessAI;
+    public static UnityEvent<Entity, bool> GetEntityBH;
+    public static UnityEvent<Technique, Entity, Entity> GetDamageValue;
+    public static UnityEvent<int> ReturnDamageValue;
+    public static UnityEvent<Assignment> GetEntityBH2;
+    public static UnityEvent<Entity> ReturnEntityBH2;
 
     // lists
     public static List<Technique> consumables = new List<Technique>();
