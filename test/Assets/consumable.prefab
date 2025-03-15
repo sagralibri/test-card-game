@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1284.7949, y: 655.51483}
-  m_SizeDelta: {x: 142.9063, y: 133.2567}
+  m_AnchoredPosition: {x: 1288.1997, y: 657.4064}
+  m_SizeDelta: {x: 131.5567, y: 129.4735}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6621536282027885881
 CanvasRenderer:
@@ -314,7 +314,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.356, y: -87.1}
+  m_AnchoredPosition: {x: -10.475, y: -92}
   m_SizeDelta: {x: 341.05, y: 30.2173}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2072103598336809399
@@ -548,7 +548,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -71.882, y: -72.291}
+  m_AnchoredPosition: {x: -81, y: -77.209}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &65717661714140758
@@ -684,7 +684,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1.3565, y: 9.8}
+  m_AnchoredPosition: {x: -1.3564, y: 9}
   m_SizeDelta: {x: 341.051, y: 94.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4122999828205325851
@@ -742,8 +742,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
-  m_fontSizeBase: 30
+  m_fontSize: 25
+  m_fontSizeBase: 25
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -824,8 +824,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1014.1, y: 654.7}
-  m_SizeDelta: {x: 355.8366, y: 208.1068}
+  m_AnchoredPosition: {x: 1004.11194, y: 664.10046}
+  m_SizeDelta: {x: 375.8124, y: 226.9075}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4409719444238343072
 CanvasRenderer:

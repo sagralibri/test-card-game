@@ -51,9 +51,6 @@ public class DeckHandler : MonoBehaviour
         manager.drainableDeck.Add(FuckYou);
         manager.treasures.Add(testTreasure);
         manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
         manager.consumables.Add(WorldEnd);
         SetToIndexDeck();
 
@@ -81,6 +78,11 @@ public class DeckHandler : MonoBehaviour
         {
         CreatePartitionObjects();
         SetToIndexDeck();
+        }
+
+        if (GetSelected() != null)
+        {
+            
         }
     }
 
@@ -282,7 +284,7 @@ public class DeckHandler : MonoBehaviour
             return null;
     }
 
-    // TODO HERE: make it work if non player is attacking, also make it less horrific
+
     public void UseTechnique(Assignment input, Entity target, bool enemy, Entity caster)
     {
         Technique usedTechnique = GetSelected();

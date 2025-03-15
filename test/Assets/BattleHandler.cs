@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 
 public class BattleHandler : MonoBehaviour
 {
@@ -34,9 +35,11 @@ public class BattleHandler : MonoBehaviour
     public Entity TestOpponent;
     public Entity opponent;
     public int damageValue;
+    public TMP_Text turn;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        turn.text = "Ally";
         manager.enemies.Add(TestOpponent);
         AddObjects();
         EntityObjectScript entityObjectScriptPlayer = playerObject.AddComponent<EntityObjectScript>();
@@ -297,17 +300,15 @@ public class BattleHandler : MonoBehaviour
             manager.canAct = true;
         }
         // this does not work. i do not know why
-        /* if (currentActor.GetComponent<EntityObjectScript>().enemy == true && currentActingSide == Turn.ALLY)
+        if (currentActor.GetComponent<EntityObjectScript>().enemy == true && currentActingSide == Turn.ALLY)
         {
             currentActingSide = Turn.ENEMY;
+            turn.text = "Enemy";
         }
         else if (currentActor.GetComponent<EntityObjectScript>().enemy == false && currentActingSide == Turn.ENEMY)
         {
             currentActingSide = Turn.ALLY;
-        } */
-        if (currentActor.GetComponent<EntityObjectScript>().unconscious == true)
-        {
-            // NextAction();
+            turn.text = "Ally";
         }
     }
 
@@ -516,4 +517,9 @@ public class BattleHandler : MonoBehaviour
     {
         damageValue = damage;
     }
+
+    // end
+
+
+
 }

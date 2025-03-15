@@ -87,12 +87,12 @@ public class counter : MonoBehaviour
 
     public void UpdateConsumableLimit()
     {
-        consumableLimit.text = manager.consumableCount.ToString() + " / " + manager.consumableMax.ToString();
+        consumableLimit.text = manager.consumables.Count.ToString() + " / " + manager.consumableMax.ToString();
     }
 
     public void UpdateTreasureLimit()
     {
-        treasureLimit.text = manager.treasureCount.ToString() + " / " + manager.treasureMax.ToString();
+        treasureLimit.text = manager.treasures.Count.ToString() + " / " + manager.treasureMax.ToString();
     }
 
     public void UpdatePlayerStatPanel()

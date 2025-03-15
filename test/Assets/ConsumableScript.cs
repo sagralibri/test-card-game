@@ -40,7 +40,7 @@ public class ConsumableScript : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (mouse_over)
         {
-		    explanation.text = usedConsumable.description;
+		    explanation.text = GetFuncText();
             Info.SetActive(true);
             if(Input.GetMouseButtonDown(0) == true)
             {
@@ -90,6 +90,54 @@ public class ConsumableScript : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     string GetFuncText()
     {
-        return usedConsumable.description;
+        string explanationtext = "";
+        string targetText = "";
+        if (usedConsumable.description != "")
+        {
+            explanationtext = usedConsumable.description;
+        }
+        else
+        {
+            switch (usedConsumable.targeting)
+            {
+                case (Target.SELF):
+                    targetText = " to yourself";
+                    break;
+                case (Target.ONEENEMY):
+                    targetText = " to one enemy";
+                    break;
+                case (Target.ALLENEMIES):
+                    targetText = " to all enemies";
+                    break;
+                case (Target.ONEALLY):
+                    targetText = " to one ally";
+                    break;
+                case (Target.ALLALLIES):
+                    targetText = " to all allies";
+                    break;
+                case (Target.ALL):
+                    targetText = " to all creatures";
+                    break;
+            }
+
+            if (usedConsumable.variableDamage == true)
+            {
+                explanationtext = "Deal " + usedConsumable.damage + " to " + usedConsumable.lowerDamage + " " + usedConsumable.damageType + targetText;
+            }
+            else if (usedConsumable.damage != 0)
+            {
+                explanationtext = "Deal " + usedConsumable.damage + " " + usedConsumable.damageType + targetText;
+            }
+
+            if (usedConsumable.repeat > 1)
+            {
+                explanationtext = explanationtext + " " + usedConsumable.repeat + " times";
+            }
+            if (usedConsumable.healingFlat > 0 || usedConsumable.healingPercent > 0)
+            {
+                
+            }
+        }
+        return explanationtext;
     }
 }

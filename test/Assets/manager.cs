@@ -56,7 +56,8 @@ public enum Rarity
     COMMON,
     RARE,
     EPIC,
-    LEGENDARY
+    LEGENDARY,
+    MYTHICAL
 }
 public enum Turn 
 {
@@ -133,6 +134,7 @@ public class manager
     public static List<GameObject> enemyObjects = new List<GameObject>();
     public static List<GameObject> allyObjects = new List<GameObject>();
     public Dictionary<Entity, GameObject> convert = new Dictionary<Entity, GameObject>();
+    public static List<GameObject> localFinds = new List<GameObject>();
 
     // var
     public static int currentStage;

@@ -4,7 +4,9 @@ using UnityEngine;
 public class Treasure : ScriptableObject
 {
     public string name;
+    public int cost;
     public Rarity rarity;
     public Texture treasureImage;
     public string description;
+    public bool shoppable;
 }

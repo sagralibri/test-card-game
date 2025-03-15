@@ -13,10 +13,12 @@ public class EntityObjectScript : MonoBehaviour
     public Assignment assignment;
     public Entity creature;
     public bool enemy;
+    public Color startColor, black;
     public bool unconscious = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        
         if (manager.GetAlignment == null)
             manager.GetAlignment = new UnityEvent<Assignment, bool>();
         manager.GetAlignment.AddListener(GetAlignment);
@@ -56,4 +58,6 @@ public class EntityObjectScript : MonoBehaviour
             unconscious = true;
         }
     }
+
+
 }

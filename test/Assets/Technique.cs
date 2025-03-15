@@ -6,6 +6,7 @@ public class Technique : ScriptableObject
     public string name;
     public int ID;
     public bool consumable;
+    public int cost;
     public Texture cardImage;
     public TechniqueType techniqueType;
     public Target targeting;
@@ -19,5 +20,6 @@ public class Technique : ScriptableObject
     public int healingPercent;
     public int extraEffectID;
     public Rarity rarity;
+    public bool shoppable = true;
     public string description;
 }
