@@ -18,6 +18,7 @@ public class ShopDeckHandler : MonoBehaviour
     // prefabs
     public GameObject treasurePrefab;
     public GameObject consumablePrefab;
+    public GameObject shopPrefab;
 
     List<GameObject> removing = new List<GameObject>();
     public static List<GameObject> partitionsDeck = new List<GameObject>();
@@ -39,6 +40,10 @@ public class ShopDeckHandler : MonoBehaviour
     public Treasure machineKey;
     List<Technique> AllTechniques = new List<Technique>();
     List<Treasure> AllTreasures = new List<Treasure>();
+    List<Treasure> foundTreasures = new List<Treasure>();
+    List<Treasure> removingTreasure = new List<Treasure>();
+    List<Technique> foundTechniques = new List<Technique>();
+    List<Technique> removingTechnique = new List<Technique>();
 
     
 
@@ -54,7 +59,10 @@ public class ShopDeckHandler : MonoBehaviour
         manager.treasures.Add(testTreasure);
         manager.consumables.Add(testConsumable);
         manager.consumables.Add(testConsumable);
+        AddAll();
         RefreshCards();
+        GetLocalFinds();
+        CreateLocalFinds();
         if (manager.NewTreasure == null)
         {
             manager.NewTreasure = new UnityEvent();
@@ -175,13 +183,70 @@ public class ShopDeckHandler : MonoBehaviour
         }
     }
 
+    public void CreateLocalFinds()
+    {
+        foreach (GameObject find in manager.localFinds)
+        {
+            removing.Add(find);
+        }
+        for (int index = 0; index < removing.Count; index++)
+        {
+            manager.localFinds.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+        int i = 1;
+        int modBoundRight = -2075;
+        int modBoundLeft = -2450;
+        foreach (Technique technique in foundTechniques)
+        {
+            float posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)2)));
+            GameObject clone = Instantiate(shopPrefab, new Vector2(posx+normalizex, -550+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+            manager.localFinds.Add(clone);
+            clone.GetComponent<ShopObject>().usedTechnique = technique;
+            clone.GetComponent<ShopObject>().thisObject = clone;
+            clone.GetComponent<ShopObject>().isTechnique = true;
+            clone.GetComponent<ShopObject>().shop = true;
+            i++;
+        }
+        foreach (Treasure treasure in foundTreasures)
+        {
+            float posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)3-(float)1)));
+            GameObject clone = Instantiate(shopPrefab, new Vector2(posx+normalizex, -550+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+            manager.localFinds.Add(clone);
+            clone.GetComponent<ShopObject>().usedTreasure = treasure;
+            clone.GetComponent<ShopObject>().thisObject = clone;
+            clone.GetComponent<ShopObject>().isTreasure = true;
+            clone.GetComponent<ShopObject>().shop = true;
+            i++;
+        }
+    }
+
     public void GetLocalFinds()
     {
         int treasureFinds = UnityEngine.Random.Range(1, 4);
         int techniqueFinds = 3 - treasureFinds;
-        List<Treasure> foundTreasures = new List<Treasure>();
-        List<Technique> foundTechniques = new List<Technique>();
-
+        treasureFinds = 0;
+        techniqueFinds = 3; // these are for testing while there are little treasures
+        Debug.Log("Treasure Found: " + treasureFinds);
+        Debug.Log("Techniques Found: " + techniqueFinds);
+        foreach (Treasure find in foundTreasures)
+        {
+            removingTreasure.Add(find);
+        }
+        for (int index = 0; index < removingTreasure.Count; index++)
+        {
+            foundTreasures.Remove(removingTreasure[index]);
+            Destroy(removingTreasure[index]);
+        }
+        foreach (Technique find in foundTechniques)
+        {
+            removingTechnique.Add(find);
+        }
+        for (int index = 0; index < removingTechnique.Count; index++)
+        {
+            foundTechniques.Remove(removingTechnique[index]);
+            Destroy(removingTechnique[index]);
+        }
         for (int i = 0; i < techniqueFinds; i++)
         {
             foundTechniques.Add(GetTechniqueFinds());
@@ -198,12 +263,15 @@ public class ShopDeckHandler : MonoBehaviour
         // this is horrible
         AllTreasures.AddRange(new List<Treasure>() {machineKey});
         AllTechniques.AddRange(new List<Technique>() {knives, twinKnives, cutOff, punch, staggeringPunch, lightspeedFist, flurryOfBlows, quickSlash, flurrySlash, fireBolt, iceBeam, windShear, lightningBolt, cleansingLight, siphon, blackHole, trueStrike, megidola, megidolaon, decimate, worldEndingStrike, daqAttack});
+        Debug.Log("All Treasure count: " + AllTreasures.Count);
+        Debug.Log("All Technique count: " + AllTechniques.Count);    
     }
 
 
     public Technique GetTechniqueFinds()
     {
         int difficulty = (int)Mathf.Clamp((float)manager.difficultyValue / 5, 0 , 5);
+        Debug.Log("Difficulty value: " + difficulty);
         List<Technique> validTechniques = new List<Technique>();
         switch (difficulty)
         {
@@ -274,7 +342,9 @@ public class ShopDeckHandler : MonoBehaviour
                 break;
             }
         }
-        int randomTechnique = UnityEngine.Random.Range(0, validTechniques.Count);
+        int randomTechnique = UnityEngine.Random.Range(0, validTechniques.Count - 1);
+        Debug.Log("Random value: " + randomTechnique);
+        Debug.Log("Valid Techniques: " + validTechniques.Count);
         return validTechniques[randomTechnique];
     }
 
@@ -352,7 +422,10 @@ public class ShopDeckHandler : MonoBehaviour
                 break;
             }
         }
-        int randomTreasure = UnityEngine.Random.Range(0, validTreasures.Count);
+        int randomTreasure = UnityEngine.Random.Range(0, validTreasures.Count - 1);
+        Debug.Log("Valid Treasures: " + validTreasures.Count);
         return validTreasures[randomTreasure];
     }
+
+
 }

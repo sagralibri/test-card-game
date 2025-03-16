@@ -13,7 +13,8 @@ MonoBehaviour:
   m_Name: MachineKey
   m_EditorClassIdentifier: 
   name: Machine Key
+  cost: 2
   rarity: 0
-  treasureImage: {fileID: 0}
+  treasureImage: {fileID: 2800000, guid: a77d62ffd8e4ad546ac9ba8a026921fe, type: 3}
   description: Gain 1 extra roll
   shoppable: 0

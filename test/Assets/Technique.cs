@@ -3,7 +3,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Technique", menuName = "Scriptable Objects/Technique")]
 public class Technique : ScriptableObject
 {
-    public string name;
+    public string namee;
     public int ID;
     public bool consumable;
     public int cost;
