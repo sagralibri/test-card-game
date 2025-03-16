@@ -8,6 +8,7 @@ public class Entity : ScriptableObject
 {
     public bool playableCharacter;
     public AIType AIType;
+    public Texture bust;
     public int MaxHealth;
     public int Health;
     public int MaxMana;

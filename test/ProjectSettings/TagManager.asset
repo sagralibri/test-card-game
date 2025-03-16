@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Canvas
   - Knives
+  - AllyView
+  - DeckView
   layers:
   - Default
   - TransparentFX
@@ -52,3 +54,4 @@ TagManager:
   - Light Layer 5
   - Light Layer 6
   - Light Layer 7
+  - Menuing
