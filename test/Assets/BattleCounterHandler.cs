@@ -11,7 +11,7 @@ public class BattleCounterHandler : MonoBehaviour
     void Start()
     {
         if (manager.moneyUpdated == null)
-            manager.moneyUpdated = new Event1();
+            manager.moneyUpdated = new UnityEvent();
 
         manager.moneyUpdated.AddListener(UpdateCounter);
 
@@ -36,7 +36,7 @@ public class BattleCounterHandler : MonoBehaviour
             manager.UpdateDiscardCounter = new UnityEvent();
         manager.UpdateDiscardCounter.AddListener(UpdateDiscards);
 
-        UpdateCounter(manager.money);
+        UpdateCounter();
         UpdateConsumableLimit();
         UpdatePlayerStats(10,10);
         UpdateTreasureLimit();
@@ -49,9 +49,9 @@ public class BattleCounterHandler : MonoBehaviour
         
     }
 
-    public void UpdateCounter(int amount)
+    public void UpdateCounter()
     {
-        counterMoney.text = amount.ToString();
+        counterMoney.text = manager.money.ToString();
     }
 
     public void UpdateConsumableLimit()

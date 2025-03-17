@@ -86,7 +86,7 @@ public enum AIType
 public class manager
 {
     // events
-    public static Event1 moneyUpdated;
+    public static UnityEvent moneyUpdated;
     public static UnityEvent ModUpdated;
     public static Event1 RollUsed;
     public static UnityEvent NewTreasure;
@@ -101,6 +101,7 @@ public class manager
     public static UnityEvent UpdateDiscardCounter;
     public static UnityEvent NextTurn;
     public static UnityEvent SideChange;
+    public static UnityEvent Reroll;
     public static UnityEvent<int, int> PlayerDamage;
     public static UnityEvent<Assignment> ObjectHover;
     public static UnityEvent<Assignment> ObjectUnhover;
@@ -156,6 +157,8 @@ public class manager
     public static int discardMax = 4;
     public static int discards = discardMax;
     public static bool canAct = true;
+    public const int baseRerollCost = 4;
+    public static int rerollCost = 4;
 
 
     public static void SetDefaultDeck()
@@ -173,13 +176,14 @@ public class manager
         ResetShop();
         rolls = defaultRolls;
         discards = discardMax;
+        rerollCost = baseRerollCost;
         NextStage.Invoke();
     }
 
     public static void UpdateMoney(int amount)
     {
         money += amount;
-        moneyUpdated.Invoke(money);
+        moneyUpdated.Invoke();
     }
 
     public static void RollMachine()

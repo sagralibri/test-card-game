@@ -977,6 +977,8 @@ MonoBehaviour:
   consumablePrefab: {fileID: 7625623836013810252, guid: 07695bb836232a7409657b22006db669, type: 3}
   shopPrefab: {fileID: 7763895553358066605, guid: bf3bf3f8239a33241bbcc7b9a783b121, type: 3}
   player: {fileID: 11400000, guid: 86bde0624ddbec046ae40a7991d32f5c, type: 2}
+  RerollButton: {fileID: 1609364401}
+  rerollCost: {fileID: 2040537404}
   knives: {fileID: 11400000, guid: 319230b984773fa49914afa81a1b242e, type: 2}
   twinKnives: {fileID: 11400000, guid: e9da819bab9934c4e8290e475674eec1, type: 2}
   cutOff: {fileID: 11400000, guid: ad67b3b42873ba042a9abca9ebef1e34, type: 2}

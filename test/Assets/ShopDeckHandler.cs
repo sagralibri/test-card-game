@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using System;
+using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -25,6 +26,8 @@ public class ShopDeckHandler : MonoBehaviour
     public static List<GameObject> partitionsTreasure = new List<GameObject>();
     public static List<GameObject> partitionsConsumable = new List<GameObject>();
     public Entity player;
+    public Button RerollButton;
+    public TMP_Text rerollCost;
     // oh boy
     public Technique knives, twinKnives, cutOff;
     public Technique punch, staggeringPunch, lightspeedFist, flurryOfBlows;
@@ -52,6 +55,7 @@ public class ShopDeckHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        rerollCost.text = manager.rerollCost.ToString();
         manager.treasures.Add(testTreasure);
         manager.treasures.Add(testTreasure);
         manager.treasures.Add(testTreasure);
@@ -61,8 +65,7 @@ public class ShopDeckHandler : MonoBehaviour
         manager.consumables.Add(testConsumable);
         AddAll();
         RefreshCards();
-        GetLocalFinds();
-        CreateLocalFinds();
+        GetNewFinds();
         if (manager.NewTreasure == null)
         {
             manager.NewTreasure = new UnityEvent();
@@ -71,7 +74,14 @@ public class ShopDeckHandler : MonoBehaviour
         {
             manager.NewConsumable = new UnityEvent();
         }
+        if (manager.Reroll == null)
+        {
+            manager.Reroll = new UnityEvent();
+        }
         manager.NewTreasure.AddListener(RefreshCards);
+        manager.NewConsumable.AddListener(RefreshCards);
+        RerollButton.onClick.AddListener(Reroll);
+
 
         Debug.Log(manager.treasures.Count);
         manager.NewTreasure.Invoke();
@@ -85,11 +95,29 @@ public class ShopDeckHandler : MonoBehaviour
         
     }
 
+    void Reroll()
+    {
+        if (manager.money >= manager.rerollCost)
+        {
+            manager.money -= manager.rerollCost;
+            manager.rerollCost += 4;
+            rerollCost.text = manager.rerollCost.ToString();
+            manager.moneyUpdated.Invoke();
+            GetNewFinds();
+        }
+    }
+
 
     public void RefreshCards()
     {
         CreatePartitionObjects();
         SetToIndexDeck();
+    }
+
+    public void GetNewFinds()
+    {
+        GetLocalFinds();
+        CreateLocalFinds();
     }
 
 

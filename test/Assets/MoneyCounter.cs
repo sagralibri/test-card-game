@@ -11,7 +11,7 @@ public class counter : MonoBehaviour
     void Start()
     {
         if (manager.moneyUpdated == null)
-            manager.moneyUpdated = new Event1();
+            manager.moneyUpdated = new UnityEvent();
 
         manager.moneyUpdated.AddListener(UpdateCounter);
 
@@ -46,6 +46,7 @@ public class counter : MonoBehaviour
 
 
         UpdateRange();
+        UpdateCounter();
         UpdateRollCounter();
         UpdateConsumableLimit();
         UpdateTreasureLimit();
@@ -59,10 +60,9 @@ public class counter : MonoBehaviour
         
     }
 
-    public void UpdateCounter(int amount)
+    public void UpdateCounter()
     {
-        string stramount = amount.ToString();
-        counterMoney.text = stramount;
+        counterMoney.text = manager.money.ToString();
     }
 
     public void UpdateRange()
