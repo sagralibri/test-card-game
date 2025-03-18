@@ -26,6 +26,7 @@ public class DeckHandler : MonoBehaviour
     public GameObject consumablePrefab;
 
     List<GameObject> removing = new List<GameObject>();
+    List<Technique> removingTechnique = new List<Technique>();
     // how tf do i set these automatically
     int topDeckBound = 550;
     int bottomDeckBound = -670;
@@ -41,17 +42,12 @@ public class DeckHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        manager.playerDeck.Add(Knives);
+        manager.playerDeck.Add(Knives);
+        manager.playerDeck.Add(Knives);
+        FillDrainableDeck();
+        DrawAll();
         CreatePartitionObjects();
-        manager.drawnCards.Add(Knives);
-        manager.drawnCards.Add(WorldEnd);
-        manager.drawnCards.Add(TwinKnives);
-        manager.drawnCards.Add(WorldEnd);
-        manager.drawnCards.Add(TwinKnives);
-        manager.drainableDeck.Add(WorldEnd);
-        manager.drainableDeck.Add(FuckYou);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.consumables.Add(WorldEnd);
         SetToIndexDeck();
 
 
@@ -66,6 +62,10 @@ public class DeckHandler : MonoBehaviour
         if (manager.AttackEntity == null)
             manager.AttackEntity = new UnityEvent<Assignment, Entity, bool, Entity>();
         manager.AttackEntity.AddListener(UseTechnique);
+
+        if (manager.EraseExcess == null)
+            manager.EraseExcess = new UnityEvent();
+        manager.EraseExcess.AddListener(RemoveExcess);
 
         manager.NewTreasure.Invoke();
         manager.NewConsumable.Invoke();
@@ -260,8 +260,8 @@ public class DeckHandler : MonoBehaviour
     {
         if (manager.drainableDeck.Count > 0 && manager.drawnCards.Count != manager.drawnMax)
         {
-        int random = UnityEngine.Random.Range(0, manager.drainableDeck.Count);
-        DrawCardfromDeck(random);
+            int random = UnityEngine.Random.Range(0, manager.drainableDeck.Count);
+            DrawCardfromDeck(random);
         }
     
     }
@@ -289,44 +289,62 @@ public class DeckHandler : MonoBehaviour
     {
         Technique usedTechnique = GetSelected();
         if (usedTechnique)
-            switch (usedTechnique.targeting)
-            {
-                case Target.SELF:
-                    if (target == player)
-                        RunTechnique(input, usedTechnique, target, caster);
-                        DiscardSelected(false);
-                    break;
-                case Target.ONEENEMY:
-                    if (enemy == true)
-                        RunTechnique(input, usedTechnique, target, caster);
-                        DiscardSelected(false);
-                    break;
-                case Target.ALLENEMIES:
-                    if (enemy == true)
-                        RunAllEnemies(usedTechnique, enemy, caster);
-                        DiscardSelected(false);
-                    break;
-                case Target.ONEALLY:
-                    if (enemy != true)
-                        RunTechnique(input, usedTechnique, target, caster);
-                        DiscardSelected(false);
-                    break;
-                case Target.ALLALLIES:
-                    if (enemy != true)
-                        RunAllAllies(usedTechnique, enemy, caster);
-                        DiscardSelected(false);
-                    break;
-                case Target.ALL:
-                    RunTechnique(input, usedTechnique, player, caster);
-                    RunAllEnemies(usedTechnique, enemy, caster);
-                    RunAllAllies(usedTechnique, enemy, caster);
-                    DiscardSelected(false);
-                    break;
-                    
-            }
-        if (usedTechnique.consumable == false)
         {
-            manager.NextTurn.Invoke();
+            if (usedTechnique.manaCost <= manager.uploadMP)
+            {
+                switch (usedTechnique.targeting)
+                {
+                    case Target.SELF:
+                        if (target == player)
+                            RunTechnique(input, usedTechnique, target, caster);
+                            manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                            DiscardSelected(false);
+                        break;
+                    case Target.ONEENEMY:
+                        if (enemy == true)
+                            RunTechnique(input, usedTechnique, target, caster);
+                            manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                            DiscardSelected(false);
+                        break;
+                    case Target.ALLENEMIES:
+                        if (enemy == true)
+                            RunAllEnemies(usedTechnique, enemy, caster);
+                            manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                            DiscardSelected(false);
+                        break;
+                    case Target.ONEALLY:
+                        if (enemy != true)
+                            RunTechnique(input, usedTechnique, target, caster);
+                            manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                            DiscardSelected(false);
+                        break;
+                    case Target.ALLALLIES:
+                        if (enemy != true)
+                            RunAllAllies(usedTechnique, enemy, caster);
+                            manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                            DiscardSelected(false);
+                        break;
+                    case Target.ALL:
+                        RunTechnique(input, usedTechnique, player, caster);
+                        RunAllEnemies(usedTechnique, enemy, caster);
+                        RunAllAllies(usedTechnique, enemy, caster);
+                        manager.GetMana.Invoke(Assignment.PLAYER, usedTechnique, target, caster);
+                        DiscardSelected(false);
+                        break; 
+                }
+                if (usedTechnique.consumable == false)
+                {
+                    manager.NextTurn.Invoke();
+                }
+            }
+        }
+    }
+
+    public void FillDrainableDeck()
+    {
+        foreach (Technique card in manager.playerDeck)
+        {
+            manager.drainableDeck.Add(card);
         }
     }
 
@@ -373,5 +391,53 @@ public class DeckHandler : MonoBehaviour
                 RunTechnique(Assignment.A2, usedTechnique, manager.allies[1], caster);
             if (manager.allies.Count > 2)
                 RunTechnique(Assignment.A3, usedTechnique, manager.allies[2], caster);
+    }
+
+
+    public void RemoveExcess()
+    {
+        foreach (GameObject partition in partitionsDeck)
+        {
+            removing.Add(partition);
+        }
+        for (int index = 0; index < removing.Count; index++)
+        {
+            partitionsDeck.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+        foreach (GameObject partition in partitionsTreasure)
+        {
+            removing.Add(partition);
+        }
+        for (int index = 0; index < removing.Count; index++)
+        {
+            partitionsTreasure.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+        foreach (GameObject partition in partitionsConsumable)
+        {
+            removing.Add(partition);
+        }
+        for (int index = 0; index < removing.Count; index++)
+        {
+            partitionsConsumable.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+        foreach(Technique card in manager.drawnCards)
+        {
+            removingTechnique.Add(card);
+        }
+        for (int index = 0; index < removingTechnique.Count; index++)
+        {
+            manager.drawnCards.Remove(removingTechnique[index]);
+        }
+        foreach(Technique card in manager.drainableDeck)
+        {
+            removingTechnique.Add(card);
+        }
+        for (int index = 0; index < removingTechnique.Count; index++)
+        {
+            manager.drainableDeck.Remove(removingTechnique[index]);
+        }
     }
 }

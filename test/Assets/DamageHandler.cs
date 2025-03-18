@@ -44,6 +44,9 @@ public class DamageHandler : MonoBehaviour
         if (manager.GetDamageValue == null)
             manager.GetDamageValue = new UnityEvent<Technique, Entity, Entity>();
         manager.GetDamageValue.AddListener(DamageTest);
+        if (manager.GetMana == null)
+            manager.GetMana = new UnityEvent<Assignment, Technique, Entity, Entity>();
+        manager.GetMana.AddListener(GetMana);
     }
       // this function assumes that the function that calls it checks mana.
 
@@ -51,16 +54,26 @@ public class DamageHandler : MonoBehaviour
     {
         Debug.Log("Current caster: " + caster);
         Debug.Log("Current target input: " + input);
-        int damage = AttackTarget(technique, caster, target);
+        Tuple<int, int> getvalue = new Tuple<int, int>(AttackTarget(technique, caster, target).Item1 , AttackTarget(technique, caster, target).Item2);
+        int damage = getvalue.Item1;
         manager.GetToEntity.Invoke(input, damage, technique);
+        //manager.ExpendMana.Invoke(input2, mana);
+    }
+
+    public void GetMana(Assignment input, Technique technique, Entity target, Entity caster)
+    {
+        Tuple<int, int> getvalue = new Tuple<int, int>(AttackTarget(technique, caster, target).Item1 , AttackTarget(technique, caster, target).Item2);
+        int mana = getvalue.Item2;
+        manager.ExpendMana.Invoke(input, mana);
     }
 
     public void DamageTest(Technique technique, Entity caster, Entity target)
     {
-        int damage = AttackTarget(technique, caster, target);
+        Tuple<int, int> getvalue = new Tuple<int, int>(AttackTarget(technique, caster, target).Item1 , AttackTarget(technique, caster, target).Item2);
+        int damage = getvalue.Item1;
         manager.ReturnDamageValue.Invoke(damage);
     }
-    public int AttackTarget(Technique technique, Entity caster, Entity target)
+    public (int damage, int mana) AttackTarget(Technique technique, Entity caster, Entity target)
     {
         int baseDamage = 0;
         int manaReduction = 0;
@@ -95,16 +108,118 @@ public class DamageHandler : MonoBehaviour
         Debug.Log("Current Damage: " + baseDamage);
         if (caster.playableCharacter == true)
         {
-            totalDamage = manager.ProcessDamageTreasures(totalDamage, target, caster);
+            totalDamage = ProcessDamageTreasures(totalDamage, target, caster, technique);
         }
         double damagedouble = Convert.ToDouble(totalDamage);
         damagedouble *= AffinityTest(target, technique.damageType);
         
-        return Convert.ToInt32(damagedouble);
+        return (Convert.ToInt32(damagedouble), manaReduction);
 
 
     }
 
+    public int ProcessDamageTreasures(int input, Entity caster, Entity target, Technique technique)
+    {
+        int output = input;
+        manager.UploadHP.Invoke();
+        int playerHP = manager.playerHealth;
+        foreach (Treasure treasure in manager.treasures)
+        {
+            switch (treasure.ID)
+            {
+                case 1:
+                {
+                    if (technique.damageType == DamageType.SLASHING)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 2:
+                {
+                    if (technique.damageType == DamageType.PIERCING)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 3:
+                {
+                    if (technique.damageType == DamageType.BLUDGEONING)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    if (technique.damageType == DamageType.FIRE)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    if (technique.damageType == DamageType.COLD)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    if (technique.damageType == DamageType.FORCE)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    if (technique.damageType == DamageType.LIGHTNING)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    if (technique.damageType == DamageType.HOLY)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 9:
+                {
+                    if (technique.damageType == DamageType.EVIL)
+                    {
+                        output += 2;
+                    }
+                    break;
+                }
+                case 10:
+                {
+                    if (technique.damageType == DamageType.ALMIGHTY)
+                    {
+                        output += 4;
+                    }
+                    break;
+                }
+                case 11:
+                {   
+                    if (playerHP == 1)
+                    {
+                        output *= 2;
+                    }
+                    break;
+                }
+            }
+        }
+
+        return output;
+    }
 
     public double AffinityTest(Entity target, DamageType type)
     {   

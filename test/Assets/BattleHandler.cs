@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -55,7 +56,8 @@ public class BattleHandler : MonoBehaviour
         entityScriptPlayer.isPlayer = true;
         
 
-
+        Debug.Log(manager.enemyObjects.Count);
+        Debug.Log(manager.allyObjects.Count);
         foreach (GameObject enemy in manager.enemyObjects)
         {
             enemy.SetActive(false);
@@ -81,6 +83,10 @@ public class BattleHandler : MonoBehaviour
         if (manager.ReturnDamageValue == null)
             manager.ReturnDamageValue = new UnityEvent<int>();
         manager.ReturnDamageValue.AddListener(SetDamage);
+
+        if (manager.EraseExcess == null)
+            manager.EraseExcess = new UnityEvent();
+        manager.EraseExcess.AddListener(DestroyExcess);
 
 
 
@@ -144,6 +150,8 @@ public class BattleHandler : MonoBehaviour
             Vector3 pos = cam.WorldToScreenPoint(convObj.transform.position);
             GameObject newOverlay = Instantiate(enemyOverlayPrefab, pos, Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
             EntityScript entityScript = newOverlay.GetComponent<EntityScript>();
+            Debug.Log(ally);
+            Debug.Log(manager.allies[0]);
             entityScript.creature = ally;
             entityScript.enemy = false;
             entityScript.entityObject = convObj;
@@ -277,6 +285,10 @@ public class BattleHandler : MonoBehaviour
         {
             Debug.Log("Valid Actor at index" + validActors.IndexOf(actor) + ": " + actor);
         }
+        if (IsAllDeadEnemy() == true)
+        {
+            Victory();
+        }
         int actorCount = validActors.Count;
         int nextActor = validActors.IndexOf(currentActor) + 1;
         if (validActors.ElementAtOrDefault(nextActor) != null)
@@ -286,7 +298,7 @@ public class BattleHandler : MonoBehaviour
             {
                 Assignment assignment = currentActor.GetComponent<EntityObjectScript>().assignment;
                 manager.canAct = false;
-                Debug.Log("boop beep");
+                Debug.Log("boop beep: " + currentActor);
                 manager.ProcessAI.Invoke(assignment);
             }
             else
@@ -329,15 +341,14 @@ public class BattleHandler : MonoBehaviour
 
     // TODO: so much
 
-    // Urgent TODO: mana cost
     void ProcessCurrentActor(Entity actor, bool isEnemy)
     {
+        Debug.Log(actor + " is now taking their turn");
         // preliminary declarations
         List<GameObject> validAllies = new List<GameObject>();
         List<GameObject> validEnemies = new List<GameObject>();
         validAllies = GetValidAllies(isEnemy);
         validEnemies = GetValidEnemies(isEnemy);
-        Dictionary<Assignment, Technique> optionsValue = new Dictionary<Assignment, Technique>();
 
         bool AOE = false;
         bool healing = false;
@@ -373,9 +384,11 @@ public class BattleHandler : MonoBehaviour
             if (AOE == false)
             {
                 Assignment input = target.GetComponent<EntityObjectScript>().assignment;
+                Assignment input2 = currentActor.GetComponent<EntityObjectScript>().assignment;
                 Entity targetEntity = target.GetComponent<EntityObjectScript>().creature;
                 Entity casterEntity = currentActor.GetComponent<EntityObjectScript>().creature;
                 manager.UseTechnique.Invoke(input, usedTechnique, targetEntity, casterEntity);
+                manager.GetMana.Invoke(input2, usedTechnique, targetEntity, casterEntity);
                 Debug.Log("Enemy turn Complete");
             }
             else
@@ -520,6 +533,57 @@ public class BattleHandler : MonoBehaviour
 
     // end
 
+    public bool IsAllDeadEnemy()
+    {
+        bool allDead = true;
+        foreach (GameObject entity in validActors)
+        {
+            if (entity.GetComponent<EntityObjectScript>().enemy == true && entity.GetComponent<EntityObjectScript>().unconscious == false)
+            {
+                allDead = false;
+            }
+        }
+        return allDead;
+    }
 
+    public void Victory()
+    {
+        manager.difficultyValue += 1;
+        manager.EraseExcess.Invoke();
+        foreach (Treasure treasure in manager.treasures)
+        {
+            switch (treasure.ID)
+            {
+                case 12:
+                {
+                    manager.money += 4;
+                    break;
+                }
+            }
+        }
+        SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
+    }
+
+    public void DestroyExcess()
+    {
+        foreach (GameObject objeect in manager.allyObjects)
+        {
+            removing.Add(objeect);
+        } 
+        for (int index = 0; index < removing.Count; index++)
+        {
+            manager.allyObjects.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+        foreach (GameObject objeect in manager.enemyObjects)
+        {
+            removing.Add(objeect);
+        } 
+        for (int index = 0; index < removing.Count; index++)
+        {
+            manager.enemyObjects.Remove(removing[index]);
+            Destroy(removing[index]);
+        }
+    }
 
 }

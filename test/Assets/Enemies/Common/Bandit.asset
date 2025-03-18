@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd2b1bdf3fc484f439f5e7d633751e3e, type: 3}
+  m_Name: Bandit
+  m_EditorClassIdentifier: 
+  playableCharacter: 0
+  AIType: 0
+  bust: {fileID: 0}
+  MaxHealth: 7
+  Health: 0
+  MaxMana: 7
+  Mana: 6
+  Armour: 0
+  StartShield: 0
+  Shield: 0
+  ArmourPen: 0
+  techniques: []
+  slashing: 1
+  piercing: 1
+  bludgeoning: 1
+  fire: 1
+  cold: 1
+  force: 1
+  lightning: 1
+  holy: 2
+  evil: 1

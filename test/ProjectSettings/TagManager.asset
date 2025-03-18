@@ -8,6 +8,7 @@ TagManager:
   - Knives
   - AllyView
   - DeckView
+  - Canvas2
   layers:
   - Default
   - TransparentFX

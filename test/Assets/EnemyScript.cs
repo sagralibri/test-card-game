@@ -41,6 +41,7 @@ public class EntityScript : MonoBehaviour
     public GameObject entityObject;
     public Assignment assignment;
     private bool mouseOver = false;
+    private bool removeOnExit = false;
     // stats
     public int MaxHealth;
     public int Health;
@@ -70,6 +71,12 @@ public class EntityScript : MonoBehaviour
         if (manager.GetEntityBH2 == null)
             manager.GetEntityBH2 = new UnityEvent<Assignment>();
         manager.GetEntityBH2.AddListener(GetEntity2);
+        if (manager.ExpendMana == null)
+            manager.ExpendMana = new UnityEvent<Assignment, int>();
+        manager.ExpendMana.AddListener(LoseMana);
+        if (manager.UploadHP == null)
+            manager.UploadHP = new UnityEvent();
+        manager.UploadHP.AddListener(GetHP);
         Debug.Log(player);
     }
 
@@ -85,6 +92,8 @@ public class EntityScript : MonoBehaviour
             {
                 Debug.Log("" + creature);
                 Debug.Log(player);
+                Debug.Log(assignment);
+                Debug.Log(enemy);
                 manager.AttackEntity.Invoke(assignment, creature, enemy, player);
             }
         }
@@ -155,6 +164,14 @@ public class EntityScript : MonoBehaviour
         }
     }
 
+    public void LoseMana(Assignment input, int mana)
+    {
+        if (assignment == input)
+        {
+            Mana -= mana;
+        }
+    }
+
     void TextUpdate()
     {
         if (isPlayer == true)
@@ -169,7 +186,7 @@ public class EntityScript : MonoBehaviour
         {
             isDead.text = "";
         }
-        health.text = Health + " / " + creature.MaxHealth;
+        health.text = Health + " / " + MaxHealth;
         entityName.text = creature.name;
         if (piercingRevealed == true)
         {
@@ -211,20 +228,24 @@ public class EntityScript : MonoBehaviour
 
     void ResetStats()
     {
-        double clampValue = manager.difficultyValue - 1;
+        double clampValue = (manager.difficultyValue / 4) - 0.75;
         if (clampValue < 1)
         {
             clampValue = 1;
         }
-        if (manager.difficultyValue > 1)
+        if (manager.difficultyValue > 1 && enemy == true)
         {
-            MaxHealth = Mathf.RoundToInt(UnityEngine.Random.Range(creature.MaxHealth * (float)clampValue, creature.MaxHealth * (float)manager.difficultyValue));
+            MaxHealth = Mathf.RoundToInt(UnityEngine.Random.Range(creature.MaxHealth * (float)clampValue, creature.MaxHealth * ((float)0.75 + ((float)manager.difficultyValue / (float)4))));
             MaxMana = Mathf.RoundToInt(UnityEngine.Random.Range(creature.MaxMana * (float)clampValue, creature.MaxMana * (float)manager.difficultyValue));
+            Health = MaxHealth;
+            Mana = MaxMana;
         }
         else
         {
-            Health = creature.MaxHealth;
-            Mana = creature.MaxMana;
+            MaxHealth = creature.MaxHealth;
+            MaxMana = creature.MaxMana;
+            Health = MaxHealth;
+            Mana = MaxMana;
         }
     }
 
@@ -232,6 +253,10 @@ public class EntityScript : MonoBehaviour
     {
         unconscious = true;
         manager.KillEntity.Invoke(input);
+        if (enemy == false)
+        {
+            removeOnExit = true;
+        }
     }
 
     void GetEntity(Assignment input)
@@ -248,6 +273,22 @@ public class EntityScript : MonoBehaviour
         if(assignment == input)
         {
         manager.ReturnEntityBH2.Invoke(creature);
+        }
+    }
+
+    void KillAlly()
+    {
+        if (removeOnExit == true)
+        {
+            manager.allies.Remove(creature);
+        }
+    }
+
+    void GetHP()
+    {
+        if (creature == player)
+        {
+            manager.playerHealth = Health;
         }
     }
 }

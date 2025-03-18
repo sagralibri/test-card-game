@@ -68,6 +68,8 @@ public class BattleCounterHandler : MonoBehaviour
 
     public void UpdatePlayerStats(int Health, int Mana)
     {
+        manager.uploadHP = Health;
+        manager.uploadMP = Mana;
         HPText.text = Health.ToString() + " / " + player.MaxHealth.ToString();
         MPText.text = Mana.ToString() + " / " + player.MaxMana.ToString();
     }

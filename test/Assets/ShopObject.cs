@@ -161,7 +161,27 @@ public class ShopObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
             }
             else
             {
-                // pack opening list
+                if (isTechnique == true)
+                {
+                    manager.techniqueShop.Remove(usedTechnique);
+                }
+                else if (isConsumable == true)
+                {
+                    manager.techniqueShop.Remove(usedTechnique);
+                }
+                else if (isTreasure == true)
+                {
+                    manager.treasureShop.Remove(usedTreasure);
+                }
+                else if (isRoller == true || isPower == true)
+                {
+
+                }
+                else if (isAlly == true)
+                {
+                    
+                }
+                manager.ShopCardTaken.Invoke();
                 Destroy(thisObject); // replace with invoke later
             }
 

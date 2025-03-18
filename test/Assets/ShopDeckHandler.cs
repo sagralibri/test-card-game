@@ -9,6 +9,7 @@ using System.Collections.Generic;
 public class ShopDeckHandler : MonoBehaviour
 {
     private manager manager;
+    int excludedType = 100;
     //partition lines
     int partitionLinesTreasure = manager.treasureMax;
     int partitionLinesConsumable = manager.consumableMax;
@@ -20,6 +21,7 @@ public class ShopDeckHandler : MonoBehaviour
     public GameObject treasurePrefab;
     public GameObject consumablePrefab;
     public GameObject shopPrefab;
+    public GameObject packPrefab;
 
     List<GameObject> removing = new List<GameObject>();
     public static List<GameObject> partitionsDeck = new List<GameObject>();
@@ -41,12 +43,15 @@ public class ShopDeckHandler : MonoBehaviour
     public Technique trueStrike, megidola, megidolaon, decimate, worldEndingStrike, daqAttack;
     // oh boy pt2
     public Treasure machineKey;
+    public Entity friend;
     List<Technique> AllTechniques = new List<Technique>();
     List<Treasure> AllTreasures = new List<Treasure>();
     List<Treasure> foundTreasures = new List<Treasure>();
     List<Treasure> removingTreasure = new List<Treasure>();
     List<Technique> foundTechniques = new List<Technique>();
     List<Technique> removingTechnique = new List<Technique>();
+    // ....
+    public Texture smallTechniquePack, bigTechniquePack;
 
     
 
@@ -55,17 +60,19 @@ public class ShopDeckHandler : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        manager.rolls = manager.defaultRolls;
         rerollCost.text = manager.rerollCost.ToString();
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.treasures.Add(testTreasure);
-        manager.consumables.Add(testConsumable);
-        manager.consumables.Add(testConsumable);
+        AddTreasure(testTreasure);
+        AddTreasure(testTreasure);
+        AddConsumable(testConsumable);
+        if (manager.allies.Count == 0)
+        {
+            manager.allies.Add(friend);
+        }
         AddAll();
         RefreshCards();
         GetNewFinds();
+        CreateLocalShops();
         if (manager.NewTreasure == null)
         {
             manager.NewTreasure = new UnityEvent();
@@ -249,6 +256,96 @@ public class ShopDeckHandler : MonoBehaviour
         }
     }
 
+    public void CreateLocalShops()
+    {
+        int i = 1;
+        int modBoundRight = -2075;
+        int modBoundLeft = -2450;
+        float posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)2-(float)1)));
+        GetShop(posx);
+        i++;
+    }
+
+    // this will crash if you run it twice right now. or just not work in some horrible way. please wait until other things are implemented then run it twice
+    public void GetShop(float posx)
+    {
+        int isBig = UnityEngine.Random.Range(0,5);
+        bool big = false;
+        int cost = 0;
+        Texture texture;
+        if (isBig == 4)
+        {
+            big = true;
+        }
+        int getType = UnityEngine.Random.Range(0,6);
+        while (getType == excludedType)
+        {
+            getType = UnityEngine.Random.Range(0,6);
+        }
+        getType = 0; //for testing, remove later
+        switch (getType)
+        {
+            case 0:
+            {
+                foreach (Technique technique in manager.techniqueShop)
+                {
+                    removingTechnique.Add(technique);
+                }
+                for (int index = 0; index < removingTechnique.Count; index++)
+                {
+                    manager.techniqueShop.Remove(removingTechnique[index]);
+                }
+                if (big == true)
+                {
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    cost = 6;
+                }
+                else
+                {
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    manager.techniqueShop.Add(GetTechniqueFinds());
+                    cost = 4;
+                }
+                GameObject clone = Instantiate(packPrefab, new Vector2(posx+normalizex, -1125+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+                clone.GetComponent<PackObject>().costMoney = cost;
+                clone.GetComponent<PackObject>().shopType = PackType.TECHNIQUE;
+                clone.GetComponent<PackObject>().bigPack = big;
+                clone.GetComponent<PackObject>().thisObject = clone;
+                excludedType = 0;
+                break;
+            }
+            case 1:
+            {
+                // treasure
+                break;
+            }
+            case 2:
+            {
+                // consumable
+                break;
+            }
+            case 3:
+            {
+                // potion
+                break;
+            }
+            case 4:
+            {
+                // roller
+                break;
+            }
+            case 5:
+            {
+                // ally
+                break;
+            }
+        }
+    }
+
     public void GetLocalFinds()
     {
         int treasureFinds = UnityEngine.Random.Range(1, 4);
@@ -264,7 +361,6 @@ public class ShopDeckHandler : MonoBehaviour
         for (int index = 0; index < removingTreasure.Count; index++)
         {
             foundTreasures.Remove(removingTreasure[index]);
-            Destroy(removingTreasure[index]);
         }
         foreach (Technique find in foundTechniques)
         {
@@ -273,7 +369,6 @@ public class ShopDeckHandler : MonoBehaviour
         for (int index = 0; index < removingTechnique.Count; index++)
         {
             foundTechniques.Remove(removingTechnique[index]);
-            Destroy(removingTechnique[index]);
         }
         for (int i = 0; i < techniqueFinds; i++)
         {
@@ -282,6 +377,22 @@ public class ShopDeckHandler : MonoBehaviour
         for (int i = 0; i < treasureFinds; i++)
         {
             foundTreasures.Add(GetTreasureFinds());
+        }
+    }
+
+    void AddTreasure(Treasure treasure)
+    {
+        if (manager.treasures.Count < manager.treasureMax)
+        {
+            manager.treasures.Add(treasure);
+        }
+    }
+
+    void AddConsumable(Technique consumable)
+    {
+        if (manager.consumables.Count < manager.consumableMax)
+        {
+            manager.consumables.Add(consumable);
         }
     }
 
@@ -454,6 +565,5 @@ public class ShopDeckHandler : MonoBehaviour
         Debug.Log("Valid Treasures: " + validTreasures.Count);
         return validTreasures[randomTreasure];
     }
-
 
 }

@@ -87,7 +87,7 @@ public class AllyView : MonoBehaviour
         {
             Ally1Obj.SetActive(true);
             Entity Ally1 = manager.allies[0];
-            Name1.text = Ally1.name;
+            Name1.text = manager.allies[0].name;
             HP1.text = Ally1.MaxHealth.ToString();
             MP1.text = Ally1.MaxMana.ToString();
             ARM1.text = Ally1.Armour.ToString();

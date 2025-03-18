@@ -83,6 +83,16 @@ public enum AIType
     RANDOM,
     SMART
 }
+
+public enum PackType
+{
+    TECHNIQUE,
+    TREASURE,
+    CONSUMABLE,
+    POTION,
+    ROLLER,
+    ALLY
+}
 public class manager
 {
     // events
@@ -106,6 +116,8 @@ public class manager
     public static UnityEvent<Assignment> ObjectHover;
     public static UnityEvent<Assignment> ObjectUnhover;
     public static UnityEvent<Assignment, Technique, Entity, Entity> UseTechnique;
+    public static UnityEvent<Assignment, Technique, Entity, Entity> GetMana;
+    public static UnityEvent<Assignment, int> ExpendMana;
     public static UnityEvent<Assignment, Entity, bool, Entity> AttackEntity;
     public static UnityEvent<Assignment, int, Technique> GetToEntity;
     public static UnityEvent<Assignment, bool> GetAlignment;
@@ -116,6 +128,11 @@ public class manager
     public static UnityEvent<int> ReturnDamageValue;
     public static UnityEvent<Assignment> GetEntityBH2;
     public static UnityEvent<Entity> ReturnEntityBH2;
+    public static UnityEvent EraseExcess;
+    public static UnityEvent ShopCardTaken;
+    public static UnityEvent InitializeShop;
+    public static UnityEvent<PackType, bool> ReturnShopInfo;
+    public static UnityEvent UploadHP;
 
     // lists
     public static List<Technique> consumables = new List<Technique>();
@@ -136,6 +153,8 @@ public class manager
     public static List<GameObject> allyObjects = new List<GameObject>();
     public Dictionary<Entity, GameObject> convert = new Dictionary<Entity, GameObject>();
     public static List<GameObject> localFinds = new List<GameObject>();
+    public static List<Technique> techniqueShop = new List<Technique>();
+    public static List<Treasure> treasureShop = new List<Treasure>();
 
     // var
     public static int currentStage;
@@ -159,6 +178,13 @@ public class manager
     public static bool canAct = true;
     public const int baseRerollCost = 4;
     public static int rerollCost = 4;
+    public static int playerHealthBonus = 0;
+    public static int playerManaBonus = 0;
+    public static int playerArmourBonus = 0;
+    public static int playerShieldBonus = 0;
+    public static int uploadHP = 10;
+    public static int uploadMP = 10;
+    public static int playerHealth;
 
 
     public static void SetDefaultDeck()
@@ -225,13 +251,7 @@ public class manager
         NewConsumable.Invoke();
     }
 
-    public static int ProcessDamageTreasures(int input, Entity caster, Entity target)
-    {
-        // this is a placeholder
-        int output;
-        output = input;
-        return output;
-    }
+
 
 
 }
