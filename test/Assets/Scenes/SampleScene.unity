@@ -1002,6 +1002,18 @@ MonoBehaviour:
   worldEndingStrike: {fileID: 11400000, guid: ce9c50eaa5d778243b0fdec6eac294de, type: 2}
   daqAttack: {fileID: 11400000, guid: d2beae835413ad24587875a3dc5fbca4, type: 2}
   machineKey: {fileID: 11400000, guid: 537a5fc67d71cb546ad1b59d625ccaab, type: 2}
+  piercingGem: {fileID: 11400000, guid: fe91bf545de97d546aa8870de7abcb18, type: 2}
+  slashingGem: {fileID: 11400000, guid: af1fd4602d1000c429cfb85f46e0aa6a, type: 2}
+  bludgeoningGem: {fileID: 11400000, guid: 5209390881fe2de419d65615f127b49e, type: 2}
+  fireGem: {fileID: 11400000, guid: c0337aef801f3df4699da1612066dc8a, type: 2}
+  coldGem: {fileID: 11400000, guid: 5ee4b14830b02f6419faf2aa1c3e31f9, type: 2}
+  forceGem: {fileID: 11400000, guid: 350cc4e60abc41749bd7b56d12bceb35, type: 2}
+  lightningGem: {fileID: 11400000, guid: e830fc4206fbe8540936d11575d0da49, type: 2}
+  holyGem: {fileID: 11400000, guid: a7c9041a1173ab448aa6fd55027db4ea, type: 2}
+  evilGem: {fileID: 11400000, guid: 9fd85f438b1b33d4398193dfe513b98f, type: 2}
+  almightyGem: {fileID: 11400000, guid: 0e90017f7e5353e4686c1ca11ce8f04d, type: 2}
+  BandOfWillpower: {fileID: 11400000, guid: 7299aebcd2044514bbe8d67ab5ecf275, type: 2}
+  GoldenCoin: {fileID: 11400000, guid: 1ec8705a7c923eb488e1f3361d3486c6, type: 2}
   friend: {fileID: 11400000, guid: 29376235c255a75499ac5b43a397ed46, type: 2}
   smallTechniquePack: {fileID: 0}
   bigTechniquePack: {fileID: 0}

@@ -23,7 +23,9 @@ MonoBehaviour:
   StartShield: 0
   Shield: 0
   ArmourPen: 0
-  techniques: []
+  techniques:
+  - {fileID: 11400000, guid: 0a1bf3ec881b1044ea6a5a85ce566eef, type: 2}
+  - {fileID: 11400000, guid: 7304d254d2f620444a1d7f9d4e900828, type: 2}
   slashing: 0
   piercing: 0
   bludgeoning: 0

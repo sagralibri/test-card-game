@@ -9,13 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d00c62620996bb94a89701a95f4cb140, type: 3}
-  m_Name: Golden Coin
+  m_Script: {fileID: 11500000, guid: af1ceb7fb0d26dd44ac190ecf422f04b, type: 3}
+  m_Name: Stage 2-1
   m_EditorClassIdentifier: 
-  ID: 12
-  namee: 
-  cost: 4
-  rarity: 0
-  treasureImage: {fileID: 2800000, guid: 504162a204f7783498243860080cc32c, type: 3}
-  description: Gain 4 gold every round.
-  shoppable: 1
+  FoughtEntities:
+  - {fileID: 11400000, guid: 2c015f7f8c5be554fba14a383a72e585, type: 2}
+  - {fileID: 11400000, guid: d2c3f3777530c5b4190b739f4520ddcd, type: 2}

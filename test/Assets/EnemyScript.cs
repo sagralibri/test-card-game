@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using TMPro;
+using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
@@ -126,6 +127,10 @@ public class EntityScript : MonoBehaviour
             {
                 Health = 0;
                 Die(input);
+                if (creature == player)
+                {
+                    SceneManager.LoadScene(3, LoadSceneMode.Single);
+                }
             }
             if (isPlayer == true)
             {

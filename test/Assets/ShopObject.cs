@@ -127,64 +127,74 @@ public class ShopObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
 
     public void BuyCard()
     {
-        if (manager.money >= GetCost() || shop == false)
+        if (isAlly == false || manager.allies.Count < 3)
         {
-            if (shop == true)
+            if (isConsumable == false || manager.consumables.Count < manager.consumableMax)
             {
-                manager.money -= GetCost();
-            }
-            if (isTechnique == true)
-            {
-                manager.playerDeck.Add(usedTechnique);
-            }
-            else if (isConsumable == true)
-            {
-                manager.consumables.Add(usedTechnique);
-            }
-            else if (isTreasure == true)
-            {
-                manager.treasures.Add(usedTreasure);
-            }
-            else if (isRoller == true || isPower == true)
-            {
+                if (isTreasure == false || manager.treasures.Count < manager.treasureMax)
+                {
+                    if (manager.money >= GetCost() || shop == false)
+                    {
+                        if (shop == true)
+                        {
+                            manager.money -= GetCost();
+                        }
+                        if (isTechnique == true)
+                        {
+                            manager.playerDeck.Add(usedTechnique);
+                        }
+                        else if (isConsumable == true)
+                        {
+                            manager.consumables.Add(usedTechnique);
+                            manager.NewConsumable.Invoke();
+                        }
+                        else if (isTreasure == true)
+                        {
+                            manager.treasures.Add(usedTreasure);
+                            manager.NewTreasure.Invoke();
+                        }
+                        else if (isRoller == true || isPower == true)
+                        {
 
-            }
-            else if (isAlly == true)
-            {
-                manager.allies.Add(usedAlly);
-            }
-            if (shop == true)
-            {
-                manager.localFinds.Remove(thisObject);
-                Destroy(thisObject); // replace with invoke later
-                // Sayonara.
-            }
-            else
-            {
-                if (isTechnique == true)
-                {
-                    manager.techniqueShop.Remove(usedTechnique);
-                }
-                else if (isConsumable == true)
-                {
-                    manager.techniqueShop.Remove(usedTechnique);
-                }
-                else if (isTreasure == true)
-                {
-                    manager.treasureShop.Remove(usedTreasure);
-                }
-                else if (isRoller == true || isPower == true)
-                {
+                        }
+                        else if (isAlly == true)
+                        {
+                            manager.allies.Add(usedAlly);
+                        }
+                        if (shop == true)
+                        {
+                            manager.localFinds.Remove(thisObject);
+                            Destroy(thisObject); // replace with invoke later
+                            // Sayonara.
+                        }
+                        else
+                        {
+                            if (isTechnique == true)
+                            {
+                                manager.techniqueShop.Remove(usedTechnique);
+                            }
+                            else if (isConsumable == true)
+                            {
+                                manager.consumableShop.Remove(usedTechnique);
+                            }
+                            else if (isTreasure == true)
+                            {
+                                manager.treasureShop.Remove(usedTreasure);
+                            }
+                            else if (isRoller == true || isPower == true)
+                            {
 
+                            }
+                            else if (isAlly == true)
+                            {
+                                
+                            }
+                            manager.ShopCardTaken.Invoke();
+                            Destroy(thisObject); // replace with invoke later
+                        }
+                    }
                 }
-                else if (isAlly == true)
-                {
-                    
-                }
-                manager.ShopCardTaken.Invoke();
-                Destroy(thisObject); // replace with invoke later
             }
-
         }
         else
         {

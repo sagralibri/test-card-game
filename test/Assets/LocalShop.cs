@@ -65,7 +65,7 @@ public class LocalShop : MonoBehaviour
             i++;
             }
         }
-        if (shopType == PackType.TREASURE)
+        else if (shopType == PackType.TREASURE)
         {
             foreach (Treasure treasure in manager.treasureShop)
             {
@@ -73,6 +73,19 @@ public class LocalShop : MonoBehaviour
             GameObject clone = Instantiate(objectPrefab, new Vector2(posx+normalizex, -700+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas2").transform);
             clone.GetComponent<ShopObject>().usedTreasure = treasure;
             clone.GetComponent<ShopObject>().isTreasure = true;
+            clone.GetComponent<ShopObject>().thisObject = clone;
+            clone.GetComponent<ShopObject>().shop = false;
+            i++;
+            }
+        }
+        else if (shopType == PackType.CONSUMABLE)
+        {
+            foreach (Technique technique in manager.consumableShop)
+            {
+            float posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)cardCount)));
+            GameObject clone = Instantiate(objectPrefab, new Vector2(posx+normalizex, -700+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas2").transform);
+            clone.GetComponent<ShopObject>().usedTechnique = technique;
+            clone.GetComponent<ShopObject>().isConsumable = true;
             clone.GetComponent<ShopObject>().thisObject = clone;
             clone.GetComponent<ShopObject>().shop = false;
             i++;

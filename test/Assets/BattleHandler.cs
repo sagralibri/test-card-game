@@ -12,6 +12,7 @@ public class BattleHandler : MonoBehaviour
 {
     
     private manager manager;
+    public bool victorious;
     public Camera cam;
     public Entity player;
     public GameObject e1;
@@ -41,7 +42,6 @@ public class BattleHandler : MonoBehaviour
     void Start()
     {
         turn.text = "Ally";
-        manager.enemies.Add(TestOpponent);
         AddObjects();
         EntityObjectScript entityObjectScriptPlayer = playerObject.AddComponent<EntityObjectScript>();
         entityObjectScriptPlayer.assignment = Assignment.PLAYER;
@@ -548,18 +548,24 @@ public class BattleHandler : MonoBehaviour
 
     public void Victory()
     {
-        manager.difficultyValue += 1;
-        manager.EraseExcess.Invoke();
-        foreach (Treasure treasure in manager.treasures)
+        if (victorious == false)
         {
-            switch (treasure.ID)
+            Debug.Log("VICTORY!");
+            manager.difficultyValue += 1;
+            manager.EraseExcess.Invoke();
+            foreach (Treasure treasure in manager.treasures)
             {
-                case 12:
+                switch (treasure.ID)
                 {
-                    manager.money += 4;
-                    break;
+                    case 12:
+                    {
+                        manager.money += 4;
+                        break;
+                    }
                 }
             }
+            manager.ProceedStage();
+            victorious = true;
         }
         SceneManager.LoadScene("SampleScene", LoadSceneMode.Single);
     }

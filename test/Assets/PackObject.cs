@@ -38,8 +38,9 @@ public class PackObject : MonoBehaviour, IPointerEnterHandler, IPointerExitHandl
     {
         if (mouse_over)
         {
-            if(Input.GetMouseButtonDown(0) == true)
+            if(Input.GetMouseButtonDown(0) == true && costMoney <= manager.money)
             {
+                manager.money -= costMoney;
                 chosenOne = true;
                 OpenPack();
             }

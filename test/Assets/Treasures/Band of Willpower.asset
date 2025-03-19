@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ID: 11
   namee: 
-  cost: 0
+  cost: 1
   rarity: 0
   treasureImage: {fileID: 0}
   description: Double damage done while at 1 HP

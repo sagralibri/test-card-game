@@ -155,10 +155,11 @@ public class manager
     public static List<GameObject> localFinds = new List<GameObject>();
     public static List<Technique> techniqueShop = new List<Technique>();
     public static List<Treasure> treasureShop = new List<Treasure>();
+    public static List<Technique> consumableShop = new List<Technique>();
 
     // var
-    public static int currentStage;
-    public static int currentLevel;
+    public static int currentStageInt;
+    public static int currentLevelInt;
     public static double difficultyValue = 1;
     public static int money = 0;
     public static int mod1 = 0;
@@ -185,6 +186,8 @@ public class manager
     public static int uploadHP = 10;
     public static int uploadMP = 10;
     public static int playerHealth;
+    public static Stage currentStage;
+    public static Campaign currentCampaign;
 
 
     public static void SetDefaultDeck()
@@ -197,13 +200,21 @@ public class manager
         drainableDeck = playerDeck;
     }
 
+    public static void SetCampaign(Campaign campaignToSet)
+    {
+        currentStageInt = 0;
+        currentCampaign = campaignToSet;
+        currentStage = currentCampaign.Stages[currentStageInt];
+    }
+
     public static void ProceedStage()
     {
-        ResetShop();
+        currentStageInt += 1;
+        currentStage = currentCampaign.Stages[currentStageInt];
+        Debug.Log(currentStage);
         rolls = defaultRolls;
         discards = discardMax;
         rerollCost = baseRerollCost;
-        NextStage.Invoke();
     }
 
     public static void UpdateMoney(int amount)
@@ -238,11 +249,6 @@ public class manager
         mod3 *= mod3m + 1;
         mod4 *= mod4m + 1;
         ModUpdated.Invoke();
-    }
-
-    public static void ResetShop()
-    {
-
     }
 
     public static void AddConsumable(Technique consumable)

@@ -43,6 +43,9 @@ public class ShopDeckHandler : MonoBehaviour
     public Technique trueStrike, megidola, megidolaon, decimate, worldEndingStrike, daqAttack;
     // oh boy pt2
     public Treasure machineKey;
+    public Treasure piercingGem, slashingGem, bludgeoningGem, fireGem, coldGem, forceGem, lightningGem, holyGem, evilGem, almightyGem;
+    public Treasure BandOfWillpower;
+    public Treasure GoldenCoin;
     public Entity friend;
     List<Technique> AllTechniques = new List<Technique>();
     List<Treasure> AllTreasures = new List<Treasure>();
@@ -50,6 +53,7 @@ public class ShopDeckHandler : MonoBehaviour
     List<Treasure> removingTreasure = new List<Treasure>();
     List<Technique> foundTechniques = new List<Technique>();
     List<Technique> removingTechnique = new List<Technique>();
+    List<Entity> removingEntity = new List<Entity>();
     // ....
     public Texture smallTechniquePack, bigTechniquePack;
 
@@ -62,9 +66,19 @@ public class ShopDeckHandler : MonoBehaviour
     {
         manager.rolls = manager.defaultRolls;
         rerollCost.text = manager.rerollCost.ToString();
-        AddTreasure(testTreasure);
-        AddTreasure(testTreasure);
-        AddConsumable(testConsumable);
+        foreach (Entity enemy in manager.enemies)
+        {
+            removingEntity.Add(enemy);
+        }
+        for (int j = 0; j < removingEntity.Count; j++)
+        {
+            manager.enemies.Remove(removingEntity[j]);
+        }
+        foreach (Entity enemy in manager.currentStage.FoughtEntities)
+        {
+            manager.enemies.Add(enemy);
+            Debug.Log(enemy);
+        }
         if (manager.allies.Count == 0)
         {
             manager.allies.Add(friend);
@@ -264,6 +278,8 @@ public class ShopDeckHandler : MonoBehaviour
         float posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)2-(float)1)));
         GetShop(posx);
         i++;
+        posx = (float)modBoundLeft + (((float)modBoundRight - (float)modBoundLeft)*(((float)i-(float)1) / ((float)2-(float)1)));
+        GetShop(posx);
     }
 
     // this will crash if you run it twice right now. or just not work in some horrible way. please wait until other things are implemented then run it twice
@@ -277,12 +293,11 @@ public class ShopDeckHandler : MonoBehaviour
         {
             big = true;
         }
-        int getType = UnityEngine.Random.Range(0,6);
+        int getType = UnityEngine.Random.Range(0,3);
         while (getType == excludedType)
         {
-            getType = UnityEngine.Random.Range(0,6);
+            getType = UnityEngine.Random.Range(0,3);
         }
-        getType = 0; //for testing, remove later
         switch (getType)
         {
             case 0:
@@ -320,12 +335,68 @@ public class ShopDeckHandler : MonoBehaviour
             }
             case 1:
             {
-                // treasure
+                foreach (Treasure treasure in manager.treasureShop)
+                {
+                    removingTreasure.Add(treasure);
+                }
+                for (int index = 0; index < removingTreasure.Count; index++)
+                {
+                    manager.treasureShop.Remove(removingTreasure[index]);
+                }
+                if (big == true)
+                {
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    cost = 6;
+                }
+                else
+                {
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    manager.treasureShop.Add(GetTreasureFinds());
+                    cost = 4;
+                }
+                GameObject clone = Instantiate(packPrefab, new Vector2(posx+normalizex, -1125+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+                clone.GetComponent<PackObject>().costMoney = cost;
+                clone.GetComponent<PackObject>().shopType = PackType.TREASURE;
+                clone.GetComponent<PackObject>().bigPack = big;
+                clone.GetComponent<PackObject>().thisObject = clone;
+                excludedType = 1;
                 break;
             }
             case 2:
             {
-                // consumable
+                foreach (Technique technique in manager.consumableShop)
+                {
+                    removingTechnique.Add(technique);
+                }
+                for (int index = 0; index < removingTechnique.Count; index++)
+                {
+                    manager.consumableShop.Remove(removingTechnique[index]);
+                }
+                if (big == true)
+                {
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    cost = 6;
+                }
+                else
+                {
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    manager.consumableShop.Add(GetTechniqueFinds());
+                    cost = 4;
+                }
+                GameObject clone = Instantiate(packPrefab, new Vector2(posx+normalizex, -1125+normalizey), Quaternion.identity, GameObject.FindGameObjectWithTag("Canvas").transform);
+                clone.GetComponent<PackObject>().costMoney = cost;
+                clone.GetComponent<PackObject>().shopType = PackType.CONSUMABLE;
+                clone.GetComponent<PackObject>().bigPack = big;
+                clone.GetComponent<PackObject>().thisObject = clone;
+                excludedType = 2;
                 break;
             }
             case 3:
@@ -350,8 +421,6 @@ public class ShopDeckHandler : MonoBehaviour
     {
         int treasureFinds = UnityEngine.Random.Range(1, 4);
         int techniqueFinds = 3 - treasureFinds;
-        treasureFinds = 0;
-        techniqueFinds = 3; // these are for testing while there are little treasures
         Debug.Log("Treasure Found: " + treasureFinds);
         Debug.Log("Techniques Found: " + techniqueFinds);
         foreach (Treasure find in foundTreasures)
@@ -400,7 +469,7 @@ public class ShopDeckHandler : MonoBehaviour
     void AddAll()
     {
         // this is horrible
-        AllTreasures.AddRange(new List<Treasure>() {machineKey});
+        AllTreasures.AddRange(new List<Treasure>() {machineKey, piercingGem, slashingGem, bludgeoningGem, fireGem, coldGem, forceGem, lightningGem, holyGem, evilGem, almightyGem, BandOfWillpower, GoldenCoin});
         AllTechniques.AddRange(new List<Technique>() {knives, twinKnives, cutOff, punch, staggeringPunch, lightspeedFist, flurryOfBlows, quickSlash, flurrySlash, fireBolt, iceBeam, windShear, lightningBolt, cleansingLight, siphon, blackHole, trueStrike, megidola, megidolaon, decimate, worldEndingStrike, daqAttack});
         Debug.Log("All Treasure count: " + AllTreasures.Count);
         Debug.Log("All Technique count: " + AllTechniques.Count);    
